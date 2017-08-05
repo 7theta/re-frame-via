@@ -50,7 +50,7 @@
 
 (defn- send!
   [server-proxy {:keys [message on-success on-failure timeout]}]
-  {:pre [(or (every? nil? [on-success on-failure timeout])
+  {:pre [(or (every? nil? [on-success on-failure])
              (every? identity [on-success on-failure timeout]))]}
   (if (and on-success on-failure)
     (via/send! server-proxy message
