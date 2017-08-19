@@ -8,12 +8,12 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any others, from this software.
 
-(defproject com.7theta/re-frame-via-fx "0.2.4"
+(defproject com.7theta/re-frame-via-fx "0.2.5"
   :description "A re-frame effects handler for via WebSocket based messaging"
   :url "https://github.com/7theta/re-frame-via-fx"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.7theta/via "0.5.3"]
+  :dependencies [[com.7theta/via "0.5.4"]
                  [re-frame "0.10.1"]]
   :scm {:name "git"
         :url "https://github.com/7theta/re-frame-via-fx"})
