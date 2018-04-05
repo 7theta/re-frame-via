@@ -8,17 +8,24 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any others, from this software.
 
-(ns via-fx.fx
+(ns re-frame-via.fx
+  (:refer-clojure :exclude [reset!])
   (:require [via.client.server-proxy :as via]
-            [re-frame.core :refer [reg-fx dispatch]]))
+            [re-frame.core :refer [reg-fx dispatch]]
+            [integrant.core :as ig]))
 
-(declare send!)
+(declare send! reset!)
 
 ;;; Public
 
+(reg-fx
+ :via/reset
+ (fn [{:keys [app config connection-params timeout] :as configuration}]
+   (reset! app config connection-params :timeout timeout)))
+
 (defn register
   "Registers an effects handler that will send requests to the server
-  referred to by 'server-proxy' using via. An optional 'timeout' can
+  referred to by `server-proxy` using via. An optional `timeout` can
   be provided which will be used for requests if no :timeout is
   provided in the individual request.
 
@@ -38,13 +45,29 @@
   in an individual request."
   [server-proxy & {:keys [timeout]}]
   (reg-fx
-   :via
+   :via/dispatch
    (fn [request-map-or-seq]
      (doseq [request (if (sequential? request-map-or-seq)
                        request-map-or-seq
                        [request-map-or-seq])]
        (send! server-proxy (cond-> request
                              (not (:timeout request)) (assoc :timeout timeout)))))))
+
+(defn reset!
+  "Reset the connection to the server. The `app` must be an atom,
+  which will be re-initialized based on the `config` and the
+  `connection-params`. This is typically used to attach authentication
+  data to the server-proxy.
+
+  The via fx handler will be re-registered after the connection is reset"
+  [app config connection-params & {:keys [timeout]
+                                   :or {timeout 5000}}]
+  (swap! app
+         #(do
+            (ig/halt! %)
+            (ig/init (cond-> config
+                       connection-params (assoc :via.client/server-proxy connection-params)))))
+  (register (:via.client/server-proxy @app) :timeout timeout))
 
 ;;; Implementation
 

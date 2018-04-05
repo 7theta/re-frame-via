@@ -8,13 +8,14 @@ lib/
 classes/
 target/
 out/
+example/resources/public/js/compiled/
 checkouts/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
 .lein-failures
 .nrepl-port
-
+figwheel_server.log
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
